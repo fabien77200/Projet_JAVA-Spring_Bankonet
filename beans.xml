@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+						http://www.springframework.org/schema/aop
+						http://www.springframework.org/schema/aop/spring-aop-3.1.xsd 
+						http://www.springframework.org/schema/tx 
+						http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
+						
+						
+	<context:annotation-config />
+	<context:component-scan base-package="com.bankonet" />
+	<context:property-placeholder location="classpath:jdbc.properties" />
+
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<bean id="HtmlReport" class="com.bankonet.report.ReportFactory"
+		factory-method="createReport">
+		<constructor-arg value="HtmlReport" />
+	</bean>
+	
+	<!-- <bean id="LogAspect" class="com.bankonet.aspect.LogAspect">
+		
+	</bean> -->
+
+	<bean id="PdfReport" class="com.bankonet.report.ReportFactory"
+		factory-method="createReport">
+		<constructor-arg value="PdfReport" />
+	</bean>
+
+	<bean id="dao" class="com.bankonet.dao.ClientDaoImpl"/>
+
+	<bean id="client" class="com.bankonet.model.Client" scope="prototype">
+		<property name="motDePasse" value="1010"></property>
+		<property name="login" value="Georges"></property>
+	</bean>
+
+	<bean id="adresse" class="com.bankonet.model.Adresse" scope="prototype">
+		<constructor-arg name="numero" value="135"></constructor-arg>
+		<constructor-arg name="rue" value="Vasco de Gama"></constructor-arg>
+		<constructor-arg name="ville" value="Antibes"></constructor-arg>
+	</bean>
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+	
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+	
+	<property name="entityManagerFactory" ref="entityManagerFactory"></property>
+	
+	</bean>
+
+	<bean id="entityManagerFactory"
+
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+
+		<property name="persistenceUnitName" value="MY_PU"></property>
+
+		<property name="dataSource" ref="dataSource" />
+
+		<property name="packagesToScan">
+
+
+			<list>
+				<value>com.bankonet.model</value>
+			</list>
+		</property>
+
+		<property name="jpaVendorAdapter">
+
+			<bean
+				class="org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter">
+
+				<property name="showSql" value="true" />
+				<property name="generateDdl" value="true" />
+				<property name="databasePlatform"
+					value="org.eclipse.persistence.platform.database.MySQLPlatform" />
+
+			</bean>
+		</property>
+
+		<property name="jpaDialect">
+			<bean class="org.springframework.orm.jpa.vendor.EclipseLinkJpaDialect" />
+		</property>
+
+		<property name="jpaPropertyMap">
+			<props>
+				<prop key="eclipselink.weaving">static</prop>
+			</props>
+		</property>
+
+	</bean>
+
+
+</beans>
